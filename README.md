@@ -20,5 +20,5 @@ WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP
 
 ## 提醒
 
-代码写的很难看, 并且不一定能保证完美运行
+代码写的很难看, 并且不一定能保证完美运行  
 暂时没把IPv6也写进去, 很快就写进去
