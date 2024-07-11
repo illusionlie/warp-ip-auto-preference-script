@@ -37,64 +37,48 @@ echo.  #############################################################
 choice /c 1230S /M "«Î ‰»Î—°œÓ: "
 if "%errorlevel%"=="5" (if "!_ipver!"=="v4" (set "_ipver=v6") else (set "_ipver=v4")) & goto :main
 if "%errorlevel%"=="4" exit
-if "%errorlevel%"=="3" goto :loopmode!_ipver!
-if "%errorlevel%"=="2" goto :get10!_ipver!
-if "%errorlevel%"=="1" goto :fullstep!_ipver!
+if "%errorlevel%"=="3" goto :loopmode
+if "%errorlevel%"=="2" goto :get10ip
+if "%errorlevel%"=="1" goto :fullstep
 call :ErrorWarn "Œ¥∂®“Âµƒ—°‘ÒœÓ∞≤≈≈-ºÏ≤ÈΩ≈±æ…Ë÷√" & exit
 
-:fullstepv4
-echo.[[94mINFO[30m]-FULLSTEP-v4 [92m“—æ≠ø™ º[30m...
-if NOT !_num! GEQ 100 (call :buildv4ip :fullstepv4)
+:fullstep
+echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [92m“—æ≠ø™ º[30m...
+if NOT !_num! GEQ 100 (call :build!_ipver!ip :fullstep)
 call :ResetALL
-call :testv4ip
-if NOT exist ".\result.txt" goto :fullstepv4
+call :testip
+if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [91m√ª”–ø…”√Ω·π˚, ÷ÿ∏¥‘À––[30m... & goto :fullstep)
 call :ifinstallwarp
-set /p _endpoint=<.\result.txt
+set /p _endpoint=<.\!_ipver!result.txt
 warp-cli tunnel endpoint reset
 warp-cli tunnel endpoint set !_endpoint!
-del /q ".\result.txt" >nul 2>nul
-echo.[[94mINFO[30m]-FULLSTEP-v4 [92m“—ÕÍ≥…[30m...
+del /q ".\*result.txt" >nul 2>nul
+echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [92m“—ÕÍ≥…[30m...
 echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
 pause>nul
 goto :top
 
-:fullstepv6
-echo.[[94mINFO[30m]-FULLSTEP-v6 [92m“—æ≠ø™ º[30m...
-if NOT !_num! GEQ 100 (call :buildv6ip :fullstepv6)
+:get10ip
+echo.[[94mINFO[30m]-Get!_ipver!IP [92m“—æ≠ø™ º[30m...
+if NOT !_num! GEQ 100 (call :build!_ipver!ip :get10ip)
 call :ResetALL
-call :testv6ip
-if NOT exist ".\result.txt" goto :fullstepv6
-call :ifinstallwarp
-set /p _endpoint=<.\result.txt
-warp-cli tunnel endpoint reset
-warp-cli tunnel endpoint set !_endpoint!
-del /q ".\result.txt" >nul 2>nul
-echo.[[94mINFO[30m]-FULLSTEP-v6 [92m“—ÕÍ≥…[30m...
-echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
-pause>nul
-goto :top
-
-:get10v4
-echo.[[94mINFO[30m]-Getv4IP [92m“—æ≠ø™ º[30m...
-if NOT !_num! GEQ 100 (call :buildv4ip :get10v4)
-call :ResetALL
-call :testv4ip
-if NOT exist ".\result.txt" goto :get10v4
-:if10v4
+call :testip
+if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-Get!_ipver!IP [91m√ª”–ø…”√Ω·π˚, ÷ÿ∏¥‘À––[30m... & goto :get10ip)
+:if10ip
 set "_line=0"
-for /f "delims=" %%a in (.\result.txt) do (
+for /f "delims=" %%a in (.\!_ipver!result.txt) do (
     set /a _line+=1
 )
 if !_line! LSS 10 (
-	echo.[[94mINFO[30m]-Getv4IP [91m–°”⁄10∏ˆΩ·π˚, ÷ÿ∏¥‘À––[30m...
-	goto :get10v4
+	echo.[[94mINFO[30m]-Get!_ipver!IP [91m–°”⁄10∏ˆΩ·π˚, ÷ÿ∏¥‘À––[30m...
+	goto :get10ip
 ) else (
 	md "#Result" >nul 2>nul
 	if NOT exist ".\#Result\" call :ErrorWarn "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–-ºÏ≤Èƒø¬º»®œﬁ" & exit
-	set "_log=.\#Result\WIPAP-v4-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
+	set "_log=.\#Result\WIPAP-!_ipver!-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
 	set "_line=0"
 	> "!_log!" (
-		for /f "delims=" %%a in (.\result.txt) do (
+		for /f "delims=" %%a in (.\!_ipver!result.txt) do (
 			if !_line! LSS 10 (
 				echo.%%a
 				set /a _line+=1
@@ -102,83 +86,30 @@ if !_line! LSS 10 (
 		)
 	)
 )
-del /q ".\result.txt" >nul 2>nul
+del /q ".\*result.txt" >nul 2>nul
 start notepad "!_log!"
-echo.[[94mINFO[30m]-Getv4IP [92m“—ÕÍ≥…[30m...
+echo.[[94mINFO[30m]-Get!_ipver!IP [92m“—ÕÍ≥…[30m...
 echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
 pause>nul
 goto :top
 
-:get10v6
-echo.[[94mINFO[30m]-Getv6IP [92m“—æ≠ø™ º[30m...
-if NOT !_num! GEQ 100 (call :buildv6ip :get10v6)
-call :ResetALL
-call :testv6ip
-if NOT exist ".\result.txt" goto :get10v6
-:if10v6
-set "_line=0"
-for /f "delims=" %%a in (.\result.txt) do (
-    set /a _line+=1
-)
-if !_line! LSS 10 (
-	echo.[[94mINFO[30m]-Getv6IP [91m–°”⁄10∏ˆΩ·π˚, ÷ÿ∏¥‘À––[30m...
-	goto :get10v6
-) else (
-	md "#Result" >nul 2>nul
-	if NOT exist ".\#Result\" call :ErrorWarn "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–-ºÏ≤Èƒø¬º»®œﬁ" & exit
-	set "_log=.\#Result\WIPAP-v6-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
-	set "_line=0"
-	> "!_log!" (
-		for /f "delims=" %%a in (.\result.txt) do (
-			if !_line! LSS 10 (
-				echo.%%a
-				set /a _line+=1
-			)
-		)
-	)
-)
-del /q ".\result.txt" >nul 2>nul
-start notepad "!_log!"
-echo.[[94mINFO[30m]-Getv6IP [92m“—ÕÍ≥…[30m...
-echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
-pause>nul
-goto :top
-
-:loopmodev4
-md "#Result\LoopMode-v4" >nul 2>nul
+:loopmode
+md "#Result\LoopMode-!_ipver!" >nul 2>nul
 if NOT exist ".\#Result\" call :ErrorWarn "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–-ºÏ≤Èƒø¬º»®œﬁ" & exit
-set "_looplog=.\#Result\LoopMode-v4\WIPAP-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
-:startloopv4
-echo.[[94mINFO[30m]-LoopMode-v4 [92mø™ º—≠ª∑[30m...
-if NOT !_num! GEQ 100 (call :buildv4ip :startloopv4)
+set "_looplog=.\#Result\LoopMode-!_ipver!\WIPAP-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
+:startloop
+echo.[[94mINFO[30m]-LoopMode-!_ipver! [92mø™ º—≠ª∑[30m...
+if NOT !_num! GEQ 100 (call :build!_ipver!ip :startloop)
 call :ResetALL
-call :testv4ip
-if NOT exist ".\result.txt" goto :startloopv4
+call :testip
+if NOT exist ".\!_ipver!result.txt" goto :startloop
 >> "!_looplog!" (
-	for /f "delims=" %%a in (.\result.txt) do (
+	for /f "delims=" %%a in (.\!_ipver!result.txt) do (
 			echo.%%a
 	)
 )
-del /q ".\result.txt" >nul 2>nul
-goto :startloopv4
-
-:loopmodev6
-md "#Result\LoopMode-v6" >nul 2>nul
-if NOT exist ".\#Result\LoopMode-v6" call :ErrorWarn "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–-ºÏ≤Èƒø¬º»®œﬁ" & exit
-set "_looplog=.\#Result\LoopMode-v6\WIPAP-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
-:startloopv6
-echo.[[94mINFO[30m]-LoopMode-v6 [92mø™ º—≠ª∑[30m...
-if NOT !_num! GEQ 100 (call :buildv6ip :startloopv6)
-call :ResetALL
-call :testv6ip
-if NOT exist ".\result.txt" goto :startloopv6
->> "!_looplog!" (
-	for /f "delims=" %%a in (.\result.txt) do (
-			echo.%%a
-	)
-)
-del /q ".\result.txt" >nul 2>nul
-goto :startloopv6
+del /q ".\*result.txt" >nul 2>nul
+goto :startloop
 
 :buildv4ip
 for /f "delims=" %%i in (.\ips-v4.txt) do (
@@ -190,35 +121,6 @@ for /f "tokens=2,3,4 delims=_.=" %%i in ('set ^| findstr =randomsort ^| sort /m 
 )
 if !_num! GEQ 100 (goto %~1) else (goto :buildv4ip)
 exit
-:testv4ip
-del /q ".\ip.txt" >nul 2>nul
-for /f "tokens=1 delims==" %%i in ('set ^| findstr =randomsort') do (
-	set %%i=
-)
-for /f "tokens=1 delims==" %%i in ('set ^| findstr =anycastip') do (
-	echo %%i>>ip.txt
-)
-for /f "tokens=1 delims==" %%i in ('set ^| findstr =anycastip') do (
-	set %%i=
-)
-del /q ".\fine.txt" >nul 2>nul
-warp -output fine.txt >nul 2>nul
-del /q ".\ip.txt" >nul 2>nul
-for /f "skip=1 tokens=1-3 delims=," %%a in (.\fine.txt) do (
-    set "_v4ip_port=%%a"
-    set "_v4loss=%%b"
-    set "_v4delay=%%c"
-	set "_v4loss=!_v4loss:%%=!"
-    set _v4delay=!_v4delay: ms=!"
-	if !_v4loss! LSS 40 (
-		if !_v4delay! LSS 500 (
-			echo.!_v4ip_port! >>".\result.txt"
-		)
-	)
-)
-del /q ".\fine.txt" >nul 2>nul
-goto :eof
-
 
 :buildv6ip
 for /f "delims=" %%i in (.\ips-v6.txt) do (
@@ -240,33 +142,34 @@ for /f "tokens=2,3,4 delims=_:=" %%i in ('set ^| findstr =randomsort ^| sort /m 
 )
 if !_num! GEQ 100 (goto %~1) else (goto :buildv6ip)
 exit
-:testv6ip
-del /q ".\ip.txt" >nul 2>nul
+
+:testip
+del /q ".\!_ipver!ip.txt" >nul 2>nul
 for /f "tokens=1 delims==" %%i in ('set ^| findstr =randomsort') do (
 	set %%i=
 )
 for /f "tokens=1 delims==" %%i in ('set ^| findstr =anycastip') do (
-	echo %%i>>ip.txt
+	echo %%i>>"!_ipver!ip.txt"
 )
 for /f "tokens=1 delims==" %%i in ('set ^| findstr =anycastip') do (
 	set %%i=
 )
-del /q ".\fine.txt" >nul 2>nul
-warp -output fine.txt >nul 2>nul
-del /q ".\ip.txt" >nul 2>nul
-for /f "skip=1 tokens=1-3 delims=, " %%a in (.\fine.txt) do (
-	set "_v6ip_port=%%a"
-	set "_v6loss=%%b"
-	set "_v6delay=%%c"
-	set "_v6loss=!_v6loss:%%=!"
-	set "_v6delay=!_v6delay: ms=!"
-	if !_v6loss! LSS 40 (
-		if !_v6delay! LSS 500 (
-			echo !_v6ip_port! >>".\result.txt"
+del /q ".\!_ipver!fine.txt" >nul 2>nul
+warp -file "!_ipver!ip.txt" -output "!_ipver!fine.txt" >nul 2>nul
+del /q ".\!_ipver!ip.txt" >nul 2>nul
+for /f "skip=1 tokens=1-3 delims=, " %%a in (.\!_ipver!fine.txt) do (
+	set "_ip_port=%%a"
+	set "_loss=%%b"
+	set "_delay=%%c"
+	set "_loss=!_loss:%%=!"
+	set "_delay=!_delay: ms=!"
+	if !_loss! LSS 40 (
+		if !_delay! LSS 500 (
+			echo !_ip_port! >>".\!_ipver!result.txt"
 		)
     )
 )
-del /q ".\fine.txt" >nul 2>nul
+del /q ".\!_ipver!fine.txt" >nul 2>nul
 goto :eof
 
 
@@ -278,8 +181,8 @@ goto :eof
 :ResetALL
 set "_num=0"
 set _log=
-del /q ".\ip.txt" >nul 2>nul
-del /q ".\fine.txt" >nul 2>nul
+del /q ".\*ip.txt" >nul 2>nul
+del /q ".\*fine.txt" >nul 2>nul
 goto :eof
 
 :ifinstallwarp
