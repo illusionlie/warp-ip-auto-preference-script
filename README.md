@@ -1,5 +1,5 @@
 # WARP IP Auto-preference
-WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP IP的脚本	
+WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP IP的脚本  
 修改自<https://gitlab.com/Misaka-blog/warp-script/-/blob/main/files/warp-yxip/warp-yxip.bat>的脚本
 
 ---
@@ -20,5 +20,5 @@ WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP
 
 ## 提醒
 
-本脚本中下载的程序来自原脚本的下载URL路径, 由此文件引发的问题与本脚本无关	
+本脚本中下载的程序来自原脚本的下载URL路径, 由此文件引发的问题与本脚本无关  
 Ps: 代码写的很难看, 并且不一定能保证完美运行  
