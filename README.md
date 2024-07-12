@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./wipap.webp" alt="WIPAP simple image" height="20%">
+</p>
+
 # WARP IP Auto-preference
 WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP IP的脚本  
 修改自<https://gitlab.com/Misaka-blog/warp-script/-/blob/main/files/warp-yxip/warp-yxip.bat>的脚本
@@ -14,7 +18,19 @@ WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP
 
 ## 如何使用
 
-直接下载源码中的`WIPAP.bat`, 新建一个空文件夹, 放入, 双击运行即可
+1. 直接下载源码中的`WIPAP.bat`
+2. 新建一个空文件夹
+3. 放入`WIPAP.bat`
+4. 双击运行即可
+
+---
+## 错误排查
+
+#### **如果运行后立刻退出**
+据我所知, 使用 Microsoft Edge 浏览器有可能会出现这种问题, 试试复制为一个新文件
+
+#### **如果出现中文乱码**
+将`WIPAP.bat`编码格式转为 ANSI
 
 ---
 
