@@ -50,6 +50,7 @@ call :ResetALL
 call :testip
 if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [91m√ª”–ø…”√Ω·π˚, ÷ÿ∏¥‘À––[30m... & goto :fullstep)
 call :ifinstallwarp
+call :ifzerotrust
 set /p _endpoint=<.\!_ipver!result.txt
 warp-cli tunnel endpoint reset
 warp-cli tunnel endpoint set !_endpoint!
@@ -176,7 +177,7 @@ goto :eof
 
 :ErrorWarn
 start mshta vbscript:msgbox(Replace("=-?-=-?-=-?-=\n"%1"","\n",vbCrLf),48,"ErrorWarn")(window.close)
-(echo =-?-=-?-=-?-= &echo %1)|msg %username% /time:1
+(echo =-?-=-?-=-?-= &echo %1)|msg %username% /time:3
 goto :eof
 
 :ResetALL
@@ -195,3 +196,7 @@ goto :eof
 for /f "tokens=2 delims==" %%i in ('wmic os get version /value') do (set "_winver=%%i")
 if !_winver! LSS 10.0 (call :ErrorWarn "ƒ„µƒWindowsœµÕ≥∞Ê±æµÕ”⁄Win10-…˝º∂Windows∞Ê±æ" & exit)
 goto :eof
+
+:ifzerotrust
+warp-cli settings list | findstr /R "^(user set)[ ]*Organization:.*$" && call :ErrorWarn "ƒ„’˝‘⁄ π”√Zero Trust-ÕÀ≥ˆZero Trust" & exit
+pause
