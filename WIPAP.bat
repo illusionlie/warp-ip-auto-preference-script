@@ -1,10 +1,11 @@
-:: WARP IP Auto-preference v0.2.0-20240711
+:: WARP IP Auto-preference v0.2.0-20240712
 :top
 endlocal
 set "wipap-ver=v0.2.0"
-set "wipap-date=20240711"
+set "wipap-date=20240712"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
 @echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936
+call :ifwin7
 if NOT exist ".\warp.exe" (
 	powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" -OutFile "warp.exe"
 )
@@ -188,4 +189,9 @@ goto :eof
 :ifinstallwarp
 warp-cli -V 2>nul
 if "%errorlevel%"=="9009" call :ErrorWarn "未找到warp-cli或无法运行-检查warp安装目录" & exit
+goto :eof
+
+:ifwin7
+for /f "tokens=2 delims==" %%i in ('wmic os get version /value') do (set "_winver=%%i")
+if !_winver! LSS 10.0 (call :ErrorWarn "你的Windows系统版本低于Win10-升级Windows版本" & exit)
 goto :eof
