@@ -4,20 +4,20 @@ endlocal
 set "wipap-ver=v0.2.0"
 set "wipap-date=20240712"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
-@echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936
+@echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936&mode con cols=80 lines=24
 call :ifwin7
 if NOT exist ".\warp.exe" (
 	powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" -OutFile "warp.exe"
 )
 if NOT exist ".\warp.exe" (
-	call :ErrorWarn "warp.exe²»´æÔÚ, ²¢ÇÒÏÂÔØÊ§°Ü-¼ì²éÍøÂçÁ¬½Ó" & exit
+	call :ErrorWarn "warp.exe²»´æÔÚ, ²¢ÇÒÏÂÔØÊ§°Ü-¼ì²éÍøÂçÁ¬½Ó" DownloadFailed &pause>nul&exit
 )
 for %%i in (v4 v6) do (
     if NOT exist ".\ips-%%i.txt" (
 		powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/ips-%%i.txt" -OutFile "ips-%%i.txt"
 	)
     if NOT exist ".\ips-%%i.txt" (
-		call :ErrorWarn "È±ÉÙ IP%%i Êý¾Ý ips-%%i.txt-¼ì²éÍøÂçÁ¬½Ó" & exit
+		call :ErrorWarn "È±ÉÙ IP%%i Êý¾Ý ips-%%i.txt-¼ì²éÍøÂçÁ¬½Ó" DownloadFailed &pause>nul&exit
 	)
 )
 call :ResetALL
@@ -25,23 +25,25 @@ set "_ipver=v4"
 :main
 set /p=<nul
 cls
-echo.  #############################################################
-echo.  #         %wipap-title%        #
-echo.  #  1. ÍêÕûÁ÷³Ì-[ÓÅÑ¡ºó×Ô¶¯ÉèÖÃ¶Ëµã]                         #
-echo.  #  2. WARP IPv4 Endpoint IP ÓÅÑ¡-[Êä³ö¿ÉÓÃµÄÇ°10¸ö]         #
-echo.  #  3. WARP IPv4 Endpoint IP ³ÖÐøÓÅÑ¡-[ÓÀ¾ÃÑ­»·ÓÅÑ¡]         #
-echo.  =-=-=-=-=-=-==-=-=-=-=-=-==-=-=-=-=-=-==-=-=-=-=-=-==-=-=-=-=
-echo.  #  0. [91mÍË³ö[30m                                                  #
-echo.  #                    µ±Ç°Ä£Ê½: IP[94m!_ipver![30m                         #
-echo.  #                     S ¼üÇÐ»»ÀàÐÍ                          #
-echo.  #############################################################
-choice /c 1230S /M "ÇëÊäÈëÑ¡Ïî: "
+echo.         #############################################################
+echo.         #         %wipap-title%        #
+echo.         #    1. ÍêÕûÁ÷³Ì-[[94mÓÅÑ¡[30mºó[94mÉèÖÃ[30m¶Ëµã]                           #
+echo.         #    2. WARP IPv4 Endpoint IP [94mÓÅÑ¡[30m-[Êä³ö¿ÉÓÃµÄÇ°10¸ö]       #
+echo.         #    3. WARP IPv4 Endpoint IP [94m³ÖÐøÓÅÑ¡[30m-[ÓÀ¾ÃÑ­»·ÓÅÑ¡]       #
+echo.         =-=-=-=-=-=-==-=-=-=-=-=-==-=-=-=-=-=-==-=-=-=-=-=-==-=-=-=-=
+echo.         #    0. [91mÍË³ö½Å±¾[30m                                            #
+echo.         #                     µ±Ç°Ä£Ê½: IP[94m!_ipver![30m                        #
+echo.         #                      S ¼üÇÐ»»ÀàÐÍ                         #
+echo.         #############################################################
+echo.                          °´ÏÂ "0 - 3" Êý×Ö¼ü¼ÌÐø"
+choice /c 1230S /M "WIPAP" >nul
+cls
 if "%errorlevel%"=="5" (if "!_ipver!"=="v4" (set "_ipver=v6") else (set "_ipver=v4")) & goto :main
 if "%errorlevel%"=="4" exit
 if "%errorlevel%"=="3" goto :loopmode
 if "%errorlevel%"=="2" goto :get10ip
 if "%errorlevel%"=="1" goto :fullstep
-call :ErrorWarn "Î´¶¨ÒåµÄÑ¡ÔñÏî°²ÅÅ-¼ì²é½Å±¾ÉèÖÃ" & exit
+call :ErrorWarn "Î´¶¨ÒåµÄÑ¡ÔñÏî°²ÅÅ-¼ì²é½Å±¾ÉèÖÃ" MainChoice &pause>nul&exit
 
 :fullstep
 echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [92mÒÑ¾­¿ªÊ¼[30m...
@@ -76,7 +78,7 @@ if !_line! LSS 10 (
 	goto :get10ip
 ) else (
 	md "#Result" >nul 2>nul
-	if NOT exist ".\#Result\" call :ErrorWarn "ÎÞ·¨´´½¨½á¹ûÎÄ¼þ¼Ð-¼ì²éÄ¿Â¼È¨ÏÞ" & exit
+	if NOT exist ".\#Result\" call :ErrorWarn "ÎÞ·¨´´½¨½á¹ûÎÄ¼þ¼Ð-¼ì²éÄ¿Â¼È¨ÏÞ" IF10IP &pause>nul&exit
 	set "_log=.\#Result\WIPAP-!_ipver!-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
 	set "_line=0"
 	> "!_log!" (
@@ -97,7 +99,7 @@ goto :top
 
 :loopmode
 md "#Result\LoopMode-!_ipver!" >nul 2>nul
-if NOT exist ".\#Result\" call :ErrorWarn "ÎÞ·¨´´½¨½á¹ûÎÄ¼þ¼Ð-¼ì²éÄ¿Â¼È¨ÏÞ" & exit
+if NOT exist ".\#Result\" call :ErrorWarn "ÎÞ·¨´´½¨½á¹ûÎÄ¼þ¼Ð-¼ì²éÄ¿Â¼È¨ÏÞ" LoopMode &pause>nul&exit
 set "_looplog=.\#Result\LoopMode-!_ipver!\WIPAP-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
 :startloop
 echo.[[94mINFO[30m]-LoopMode-!_ipver! [92m¿ªÊ¼Ñ­»·[30m...
@@ -174,9 +176,9 @@ for /f "skip=1 tokens=1-3 delims=, " %%a in (.\!_ipver!fine.txt) do (
 del /q ".\!_ipver!fine.txt" >nul 2>nul
 goto :eof
 
-
 :ErrorWarn
-start mshta vbscript:msgbox(Replace("=-?-=-?-=-?-=\n"%1"","\n",vbCrLf),48,"ErrorWarn")(window.close)
+echo.[[91mERROR[30m]-%2 %1
+::start mshta vbscript:msgbox(Replace("=-?-=-?-=-?-=\n"%1"","\n",vbCrLf),48,"ErrorWarn")(window.close)
 (echo =-?-=-?-=-?-= &echo %1)|msg %username% /time:3
 goto :eof
 
@@ -188,15 +190,14 @@ del /q ".\*fine.txt" >nul 2>nul
 goto :eof
 
 :ifinstallwarp
-warp-cli -V 2>nul
-if "%errorlevel%"=="9009" call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎÞ·¨ÔËÐÐ-¼ì²éwarp°²×°Ä¿Â¼" & exit
+warp-cli -V 2>nul >nul
+if "%errorlevel%"=="9009" call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎÞ·¨ÔËÐÐ-¼ì²éwarp°²×°Ä¿Â¼" IFInstallWARP &pause>nul&exit
 goto :eof
 
 :ifwin7
 for /f "tokens=2 delims==" %%i in ('wmic os get version /value') do (set "_winver=%%i")
-if !_winver! LSS 10.0 (call :ErrorWarn "ÄãµÄWindowsÏµÍ³°æ±¾µÍÓÚWin10-Éý¼¶Windows°æ±¾" & exit)
+if !_winver! LSS 10.0 (call :ErrorWarn "ÄãµÄWindowsÏµÍ³°æ±¾µÍÓÚWin10-Éý¼¶Windows°æ±¾" IFWin7 &pause>nul&exit)
 goto :eof
 
 :ifzerotrust
-warp-cli settings list | findstr /R "^(user set)[ ]*Organization:.*$" && call :ErrorWarn "ÄãÕýÔÚÊ¹ÓÃZero Trust-ÍË³öZero Trust" & exit
-pause
+warp-cli settings list|findstr /R "^(user set)[ ]*Organization:.*$" >nul 2>nul&&call :ErrorWarn "ÄãÕýÔÚÊ¹ÓÃZero Trust-ÍË³öZero Trust" IFZeroTrust &pause>nul&exit
