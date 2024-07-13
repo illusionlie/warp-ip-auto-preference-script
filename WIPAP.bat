@@ -1,7 +1,7 @@
-:: WARP IP Auto-preference v0.3.0-20240713
+:: WARP IP Auto-preference v0.3.1-20240713
 :top
 endlocal
-set "wipap-ver=v0.3.0"
+set "wipap-ver=v0.3.1"
 set "wipap-date=20240713"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
 @echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936&mode con cols=80 lines=24
@@ -204,7 +204,8 @@ if !_winver! LSS 10.0 (call :ErrorWarn "你的Windows系统版本低于Win10-升级Windows
 goto :eof
 
 :ifzerotrust
-warp-cli settings list|findstr /R "^(user set)[ ]*Organization:.*$" >nul 2>nul&&call :ErrorWarn "你正在使用Zero Trust-退出Zero Trust" IFZeroTrust &pause>nul&exit
+warp-cli settings list|findstr /R "^(user set)\s*Organization:.*$" >nul 2>nul&&call :ErrorWarn "你正在使用Zero Trust-退出Zero Trust" IFZeroTrust &pause>nul&exit
+goto :eof
 
 :iferrorfolder
 echo.!cd!|findstr /I "%% ^! ^^ ^| ^& ^' ^) ^("&&(call :ErrorWarn "文件夹路径包含非法字符-修改路径" IFErrorFolder &pause>nul&exit)
