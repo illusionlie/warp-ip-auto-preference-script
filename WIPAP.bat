@@ -218,6 +218,7 @@ goto :eof
 :updater
 cls
 echo.[[94mINFO[30m]-Updater [92mÕýÔÚ´Ó Github ¼ì²é¸üÐÂ[30m...
+curl -V >nul||(call :ErrorWarn "curl²»´æÔÚ ÎÞ·¨Ö´ÐÐ-¼ì²écURL" Updater &pause>nul&exit)
 for /f "tokens=2 delims=:," %%i in ('curl -L https://api.github.com/repos/illusionlie/warp-ip-auto-preference-script/releases/latest 2^>nul ^| findstr /R "^[ ]*\"tag_name\": *\"v[0-9]+\.[0-9]+\.[0-9]+\"$"') do (
     set "_ver=%%~i"
     goto :checkupdate
