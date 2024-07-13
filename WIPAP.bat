@@ -43,6 +43,7 @@ echo.         #                        ¶îÍâ¹¦ÄÜ                           #
 echo.         #    A. [94m¼ì²é°æ±¾¸üĞÂ[30m                                        #
 echo.         #    B. [94mÖØÖÃËíµÀ¶Ëµã[30m                                        #
 echo.         #############################################################
+echo.                          °´ÏÂ "A - B" °´¼üºó¼ÌĞø"
 choice /c 1230SAB /M "WIPAP" >nul
 cls
 if "%errorlevel%"=="7" goto :resetendpoint
@@ -187,7 +188,6 @@ goto :eof
 
 :ErrorWarn
 echo.[[91mERROR[30m]-%2 %1
-::start mshta vbscript:msgbox(Replace("=-?-=-?-=-?-=\n"%1"","\n",vbCrLf),48,"ErrorWarn")(window.close)
 (echo =-?-=-?-=-?-= &echo %1)|msg %username% /time:3
 goto :eof
 
@@ -218,7 +218,7 @@ goto :eof
 :updater
 cls
 echo.[[94mINFO[30m]-Updater [92mÕıÔÚ´Ó Github ¼ì²é¸üĞÂ[30m...
-for /f "tokens=2 delims=:," %%i in ('curl -L https://api.github.com/repos/illusionlie/warp-ip-auto-preference-script/releases 2^>nul ^| findstr /R "^[ ]*\"tag_name\": *\"v[0-9]+\.[0-9]+\.[0-9]+\"$"') do (
+for /f "tokens=2 delims=:," %%i in ('curl -L https://api.github.com/repos/illusionlie/warp-ip-auto-preference-script/releases/latest 2^>nul ^| findstr /R "^[ ]*\"tag_name\": *\"v[0-9]+\.[0-9]+\.[0-9]+\"$"') do (
     set "_ver=%%~i"
     goto :checkupdate
 )
@@ -264,15 +264,15 @@ if !_major! EQU !_major-c! (
 )
 echo.
 if "!_update!"=="true" (
-	echo.[[94mINFO[30m]-Updater [92m·¢ÏÖĞÂ°æ±¾:[30m v!_ver!
-	echo.[[94mINFO[30m]-Updater [94mµ±Ç°°æ±¾:[30m v!wipap-ver!
+	echo.[[94mINFO[30m]-Updater [92m·¢ÏÖĞÂ°æ±¾:[30m v[94m!_ver![30m
+	echo.[[94mINFO[30m]-Updater [94mµ±Ç°°æ±¾:[30m v[94m!wipap-ver![30m
 	(echo =-?-=-?-=-?-= &echo.·¢ÏÖĞÂ°æ±¾: v%_ver%&echo.µ±Ç°°æ±¾: v%wipap-ver%)|msg %username%
 ) else (
 if "!_update!"=="same" (
-	echo.[[94mINFO[30m]-Updater [92mÄãÒÑ¾­ÔÚÊ¹ÓÃ×îĞÂ°æ±¾:[30m v!_ver!
+	echo.[[94mINFO[30m]-Updater [92mÄãÒÑ¾­ÔÚÊ¹ÓÃ×îĞÂ°æ±¾:[30m v[94m!_ver![30m
 ) else (
-	echo.[[94mINFO[30m]-Updater [92mÄãÕıÔÚÊ¹ÓÃÌáÇ°·¢ĞĞ°æ±¾:[30m v!wipap-ver!
-	echo.[[94mINFO[30m]-Updater [92mµ±Ç°×îĞÂ·¢ĞĞ°æ±¾:[30m v!_ver!
+	echo.[[94mINFO[30m]-Updater [92mÄãÕıÔÚÊ¹ÓÃÌáÇ°·¢ĞĞ°æ±¾:[30m v[94m!wipap-ver![30m
+	echo.[[94mINFO[30m]-Updater [92mµ±Ç°×îĞÂ·¢ĞĞ°æ±¾:[30m v[94m!_ver![30m
 )
 )
 echo.°´ÈÎÒâ¼ü·µ»ØÖ÷²Ëµ¥
