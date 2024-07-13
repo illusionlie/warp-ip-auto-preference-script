@@ -40,9 +40,11 @@ echo.
 echo.         #############################################################
 echo.         #                        ¶îÍâ¹¦ÄÜ                           #
 echo.         #    A. [94m¼ì²é°æ±¾¸üÐÂ[30m                                        #
+echo.         #    B. [94mÖØÖÃËíµÀ¶Ëµã[30m                                        #
 echo.         #############################################################
-choice /c 1230SA /M "WIPAP" >nul
+choice /c 1230SAB /M "WIPAP" >nul
 cls
+if "%errorlevel%"=="7" goto :resetendpoint
 if "%errorlevel%"=="6" goto :updater
 if "%errorlevel%"=="5" (if "!_ipver!"=="v4" (set "_ipver=v6") else (set "_ipver=v4")) & goto :main
 if "%errorlevel%"=="4" exit
@@ -268,6 +270,14 @@ if "!_update!"=="same" (
 	echo.[[94mINFO[30m]-Updater [92mµ±Ç°×îÐÂ·¢ÐÐ°æ±¾:[30m v!_ver!
 )
 )
+echo.°´ÈÎÒâ¼ü·µ»ØÖ÷²Ëµ¥
+pause>nul
+goto :top
+
+:resetendpoint
+call :ifzerotrust
+warp-cli tunnel endpoint reset
+echo.[[94mINFO[30m]-ResetEndpoint [92mÖØÖÃÖ´ÐÐ²Ù×÷Íê³É[30m
 echo.°´ÈÎÒâ¼ü·µ»ØÖ÷²Ëµ¥
 pause>nul
 goto :top
