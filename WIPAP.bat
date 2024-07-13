@@ -61,7 +61,7 @@ if NOT !_num! GEQ 100 (call :build!_ipver!ip :fullstep)
 call :ResetALL
 call :testip
 if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [91mÃ»ÓÐ¿ÉÓÃ½á¹û, ÖØ¸´ÔËÐÐ[30m... & goto :fullstep)
-call :ifinstallwarp
+warp-cli -V 2>nul >nul||(call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎÞ·¨ÔËÐÐ-¼ì²éwarp°²×°Ä¿Â¼" FULLSTEP &pause>nul&exit)
 call :ifzerotrust
 set /p _endpoint=<.\!_ipver!result.txt
 warp-cli tunnel endpoint reset
@@ -196,11 +196,6 @@ set "_num=0"
 set _log=
 del /q ".\*ip.txt" >nul 2>nul
 del /q ".\*fine.txt" >nul 2>nul
-goto :eof
-
-:ifinstallwarp
-warp-cli -V 2>nul >nul
-if "%errorlevel%"=="9009" (call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎÞ·¨ÔËÐÐ-¼ì²éwarp°²×°Ä¿Â¼" IFInstallWARP &pause>nul&exit)
 goto :eof
 
 :ifwin7
