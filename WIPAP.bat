@@ -1,8 +1,8 @@
-:: WARP IP Auto-preference v0.2.0-20240712
+:: WARP IP Auto-preference v0.3.0-20240713
 :top
 endlocal
-set "wipap-ver=v0.2.0"
-set "wipap-date=20240712"
+set "wipap-ver=v0.3.0"
+set "wipap-date=20240713"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
 @echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936&mode con cols=80 lines=24
 call :ifwin7
@@ -26,7 +26,7 @@ set "_ipver=v4"
 set /p=<nul
 cls
 echo.         #############################################################
-echo.         #         %wipap-title%        #
+echo.         #         !wipap-title!        #
 echo.         #    1. ÍêÕûÁ÷³Ì-[[94mÓÅÑ¡[30mºó[94mÉèÖÃ[30m¶Ëµã]                           #
 echo.         #    2. WARP IPv4 Endpoint IP [94mÓÅÑ¡[30m-[Êä³ö¿ÉÓÃµÄÇ°10¸ö]       #
 echo.         #    3. WARP IPv4 Endpoint IP [94m³ÖÐøÓÅÑ¡[30m-[ÓÀ¾ÃÑ­»·ÓÅÑ¡]       #
@@ -36,8 +36,14 @@ echo.         #                     µ±Ç°Ä£Ê½: IP[94m!_ipver![30m              
 echo.         #                      S ¼üÇÐ»»ÀàÐÍ                         #
 echo.         #############################################################
 echo.                          °´ÏÂ "0 - 3" Êý×Ö¼ü¼ÌÐø"
-choice /c 1230S /M "WIPAP" >nul
+echo.
+echo.         #############################################################
+echo.         #                        ¶îÍâ¹¦ÄÜ                           #
+echo.         #    A. [94m¼ì²é°æ±¾¸üÐÂ[30m                                        #
+echo.         #############################################################
+choice /c 1230SA /M "WIPAP" >nul
 cls
+if "%errorlevel%"=="6" goto :updater
 if "%errorlevel%"=="5" (if "!_ipver!"=="v4" (set "_ipver=v6") else (set "_ipver=v4")) & goto :main
 if "%errorlevel%"=="4" exit
 if "%errorlevel%"=="3" goto :loopmode
@@ -201,3 +207,67 @@ goto :eof
 
 :ifzerotrust
 warp-cli settings list|findstr /R "^(user set)[ ]*Organization:.*$" >nul 2>nul&&call :ErrorWarn "ÄãÕýÔÚÊ¹ÓÃZero Trust-ÍË³öZero Trust" IFZeroTrust &pause>nul&exit
+
+:updater
+cls
+echo.[[94mINFO[30m]-Updater [92mÕýÔÚ´Ó Github ¼ì²é¸üÐÂ[30m...
+for /f "tokens=2 delims=:," %%i in ('curl -L https://api.github.com/repos/illusionlie/warp-ip-auto-preference-script/releases 2^>nul ^| findstr /R "^[ ]*\"tag_name\": *\"v[0-9]+\.[0-9]+\.[0-9]+\"$"') do (
+    set "_ver=%%~i"
+    goto :checkupdate
+)
+:checkupdate
+if NOT defined _ver call :ErrorWarn "Github API »ñÈ¡µ½µÄÖµÎª¿Õ-¼ì²éÍøÂçÁ¬½Ó" CheckUpdate &pause>nul&goto :top
+echo.[[94mINFO[30m]-Updater [92mÕýÔÚ´¦Àí·µ»ØµÄ°æ±¾ºÅ½á¹û[30m...
+set "_ver=!_ver:"=!"
+set "_ver=!_ver:v=!"
+set "_ver=!_ver: =!"
+echo.!_ver!|findstr /R "^[0-9\.]*$" >nul||(call :ErrorWarn "´¦Àíºó°üº¬²»Ó¦¸Ã´æÔÚµÄ×Ö·û-¼ì²é½Å±¾ÉèÖÃ" CheckUpdate &pause>nul&goto :top)
+for /f "tokens=1-3 delims=." %%a in ("!_ver!") do (
+    set "_major=%%a"
+    set "_minor=%%b"
+    set "_patch=%%c"
+)
+echo.[[94mINFO[30m]-Updater [92mÕýÔÚ´¦ÀíÄÚ²¿µÄ°æ±¾ºÅ½á¹û[30m...
+if NOT defined wipap-ver (call :ErrorWarn "½Å±¾ÄÚ²¿°æ±¾ºÅµÄÖµÎª¿Õ-¼ì²é½Å±¾ÉèÖÃ" CheckUpdate &pause>nul&goto :top)
+set "wipap-ver=!wipap-ver:v=!"
+for /f "tokens=1-3 delims=." %%a in ("!wipap-ver!") do (
+    set "_major-c=%%a"
+    set "_minor-c=%%b"
+    set "_patch-c=%%c"
+)
+echo.[[94mINFO[30m]-Updater [92mÕýÔÚ¶Ô±È°æ±¾ºÅ[30m...
+set "_update=false"
+if !_major! GTR !_major-c! (
+    set "_update=true"
+) else if !_major! EQU !_major-c! (
+    if !_minor! GTR !_minor-c! (
+        set "_update=true"
+    ) else if !_minor! EQU !_minor-c! (
+        if !_patch! GTR !_patch-c! (
+            set "_update=true"
+        )
+    )
+)
+if !_major! EQU !_major-c! (
+	if !_minor! EQU !_minor-c! (
+		if !_patch! EQU !_patch-c! (
+			set "_update=same"
+		)
+	)
+)
+echo.
+if "!_update!"=="true" (
+	echo.[[94mINFO[30m]-Updater [92m·¢ÏÖÐÂ°æ±¾:[30m v!_ver!
+	echo.[[94mINFO[30m]-Updater [94mµ±Ç°°æ±¾:[30m v!wipap-ver!
+	(echo =-?-=-?-=-?-= &echo.·¢ÏÖÐÂ°æ±¾: v%_ver%&echo.µ±Ç°°æ±¾: v%wipap-ver%)|msg %username%
+) else (
+if "!_update!"=="same" (
+	echo.[[94mINFO[30m]-Updater [92mÄãÒÑ¾­ÔÚÊ¹ÓÃ×îÐÂ°æ±¾:[30m v!_ver!
+) else (
+	echo.[[94mINFO[30m]-Updater [92mÄãÕýÔÚÊ¹ÓÃÌáÇ°·¢ÐÐ°æ±¾:[30m v!wipap-ver!
+	echo.[[94mINFO[30m]-Updater [92mµ±Ç°×îÐÂ·¢ÐÐ°æ±¾:[30m v!_ver!
+)
+)
+echo.°´ÈÎÒâ¼ü·µ»ØÖ÷²Ëµ¥
+pause>nul
+goto :top
