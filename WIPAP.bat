@@ -6,6 +6,7 @@ set "wipap-date=20240713"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
 @echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936&mode con cols=80 lines=24
 call :ifwin7
+call :iferrorfolder
 if NOT exist ".\warp.exe" (
 	powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" -OutFile "warp.exe"
 )
@@ -86,7 +87,7 @@ if !_line! LSS 10 (
 	goto :get10ip
 ) else (
 	md "#Result" >nul 2>nul
-	if NOT exist ".\#Result\" call :ErrorWarn "ÎŞ·¨´´½¨½á¹ûÎÄ¼ş¼Ğ-¼ì²éÄ¿Â¼È¨ÏŞ" IF10IP &pause>nul&exit
+	if NOT exist ".\#Result\" (call :ErrorWarn "ÎŞ·¨´´½¨½á¹ûÎÄ¼ş¼Ğ-¼ì²éÄ¿Â¼È¨ÏŞ" IF10IP &pause>nul&exit)
 	set "_log=.\#Result\WIPAP-!_ipver!-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
 	set "_line=0"
 	> "!_log!" (
@@ -107,7 +108,7 @@ goto :top
 
 :loopmode
 md "#Result\LoopMode-!_ipver!" >nul 2>nul
-if NOT exist ".\#Result\" call :ErrorWarn "ÎŞ·¨´´½¨½á¹ûÎÄ¼ş¼Ğ-¼ì²éÄ¿Â¼È¨ÏŞ" LoopMode &pause>nul&exit
+if NOT exist ".\#Result\" (call :ErrorWarn "ÎŞ·¨´´½¨½á¹ûÎÄ¼ş¼Ğ-¼ì²éÄ¿Â¼È¨ÏŞ" LoopMode &pause>nul&exit)
 set "_looplog=.\#Result\LoopMode-!_ipver!\WIPAP-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
 :startloop
 echo.[[94mINFO[30m]-LoopMode-!_ipver! [92m¿ªÊ¼Ñ­»·[30m...
@@ -199,7 +200,7 @@ goto :eof
 
 :ifinstallwarp
 warp-cli -V 2>nul >nul
-if "%errorlevel%"=="9009" call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎŞ·¨ÔËĞĞ-¼ì²éwarp°²×°Ä¿Â¼" IFInstallWARP &pause>nul&exit
+if "%errorlevel%"=="9009" (call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎŞ·¨ÔËĞĞ-¼ì²éwarp°²×°Ä¿Â¼" IFInstallWARP &pause>nul&exit)
 goto :eof
 
 :ifwin7
@@ -210,6 +211,10 @@ goto :eof
 :ifzerotrust
 warp-cli settings list|findstr /R "^(user set)[ ]*Organization:.*$" >nul 2>nul&&call :ErrorWarn "ÄãÕıÔÚÊ¹ÓÃZero Trust-ÍË³öZero Trust" IFZeroTrust &pause>nul&exit
 
+:iferrorfolder
+echo.!cd!|findstr /I "%% ^! ^^ ^| ^& ^' ^) ^("&&(call :ErrorWarn "ÎÄ¼ş¼ĞÂ·¾¶°üº¬·Ç·¨×Ö·û-ĞŞ¸ÄÂ·¾¶" IFErrorFolder &pause>nul&exit)
+goto :eof
+
 :updater
 cls
 echo.[[94mINFO[30m]-Updater [92mÕıÔÚ´Ó Github ¼ì²é¸üĞÂ[30m...
@@ -218,7 +223,7 @@ for /f "tokens=2 delims=:," %%i in ('curl -L https://api.github.com/repos/illusi
     goto :checkupdate
 )
 :checkupdate
-if NOT defined _ver call :ErrorWarn "Github API »ñÈ¡µ½µÄÖµÎª¿Õ-¼ì²éÍøÂçÁ¬½Ó" CheckUpdate &pause>nul&goto :top
+if NOT defined _ver (call :ErrorWarn "Github API »ñÈ¡µ½µÄÖµÎª¿Õ-¼ì²éÍøÂçÁ¬½Ó" CheckUpdate &pause>nul&goto :top)
 echo.[[94mINFO[30m]-Updater [92mÕıÔÚ´¦Àí·µ»ØµÄ°æ±¾ºÅ½á¹û[30m...
 set "_ver=!_ver:"=!"
 set "_ver=!_ver:v=!"
