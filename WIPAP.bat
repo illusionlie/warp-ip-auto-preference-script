@@ -204,7 +204,7 @@ if !_winver! LSS 10.0 (call :ErrorWarn "ÄãµÄWindowsÏµÍ³°æ±¾µÍÓÚWin10-Éý¼¶Windows
 goto :eof
 
 :ifzerotrust
-warp-cli settings list|findstr /R "^(user set)\s*Organization:.*$" >nul 2>nul&&call :ErrorWarn "ÄãÕýÔÚÊ¹ÓÃZero Trust-ÍË³öZero Trust" IFZeroTrust &pause>nul&exit
+warp-cli settings list|findstr /C:"(user set)"|findstr "Organization">nul 2>nul&&(call :ErrorWarn "ÄãÕýÔÚÊ¹ÓÃZero Trust-ÍË³öZero Trust" IFZeroTrust &pause>nul&exit)
 goto :eof
 
 :iferrorfolder
@@ -277,9 +277,10 @@ pause>nul
 goto :top
 
 :resetendpoint
+warp-cli -V 2>nul >nul||(call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎÞ·¨ÔËÐÐ-¼ì²éwarp°²×°Ä¿Â¼" FULLSTEP &pause>nul&exit)
 call :ifzerotrust
 warp-cli tunnel endpoint reset
-echo.[[94mINFO[30m]-ResetEndpoint [92mÖØÖÃÖ´ÐÐ²Ù×÷Íê³É[30m
+echo.[[94mINFO[30m]-ResetEndpoint [92mÖØÖÃÖ´ÐÐ²Ù×÷Íê³É[30m
 echo.°´ÈÎÒâ¼ü·µ»ØÖ÷²Ëµ¥
 pause>nul
 goto :top
