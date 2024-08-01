@@ -20,7 +20,7 @@ WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP
 
 ## 如何使用
 
-1. 直接下载源码中的`WIPAP.bat`
+1. 直接下载源码中的`WIPAP.bat` 或 [Release](https://github.com/illusionlie/warp-ip-auto-preference-script/releases) 中的对应文件
 2. 新建一个空文件夹
 3. 放入`WIPAP.bat`
 4. 双击运行即可
@@ -29,7 +29,7 @@ WARP IP Auto-preference (以下简称WIPAP) 是一个用于优选Cloudflare WARP
 ## 错误排查
 
 #### **如果运行后立刻退出**
-据我所知, 使用 Microsoft Edge 浏览器有可能会出现这种问题, 试试复制为一个新文件
+使用 Microsoft Edge 浏览器有可能会出现这种问题, 试试复制为一个新文件
 
 #### **如果出现中文乱码**
 将`WIPAP.bat`编码格式转为 ANSI
