@@ -64,9 +64,9 @@ if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [9
 warp-cli -V 2>nul >nul||(call :ErrorWarn "Î´ÕÒµ½warp-cli»òÎŞ·¨ÔËĞĞ-¼ì²éwarp°²×°Ä¿Â¼" FULLSTEP &pause>nul&exit)
 call :ifzerotrust
 set /p _endpoint=<.\!_ipver!result.txt
-warp-cli tunnel endpoint reset
-warp-cli tunnel endpoint set !_endpoint!
-warp-cli tunnel rotate-keys
+set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94mÖØÖÃ¶Ëµã[30m: <nul&warp-cli tunnel endpoint reset
+set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94mÉèÖÃ¶Ëµã[30m: <nul&warp-cli tunnel endpoint set !_endpoint!
+set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94mÖØÖÃ¼ÓÃÜÃÜÔ¿[30m: <nul&warp-cli tunnel rotate-keys
 del /q ".\*result.txt" >nul 2>nul
 echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [92mÒÑÍê³É[30m...
 echo.°´ÈÎÒâ¼ü·µ»ØÖ÷²Ëµ¥
