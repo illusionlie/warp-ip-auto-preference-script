@@ -46,7 +46,7 @@ echo.         #############################################################
 echo.                          ∞¥œ¬ "A - B" ∞¥º¸∫ÛºÃ–¯"
 choice /c 1230SAB /M "WIPAP" >nul
 cls
-if "%errorlevel%"=="7" goto :resetendpoint
+if "%errorlevel%"=="7" call :resetendpoint&&echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•&pause>nul&&goto :top
 if "%errorlevel%"=="6" goto :updater
 if "%errorlevel%"=="5" (if "!_ipver!"=="v4" (set "_ipver=v6") else (set "_ipver=v4")) & goto :main
 if "%errorlevel%"=="4" exit
@@ -64,7 +64,7 @@ if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [9
 warp-cli -V 2>nul >nul||(call :ErrorWarn "Œ¥’“µΩwarp-cliªÚŒﬁ∑®‘À––-ºÏ≤Èwarp∞≤◊∞ƒø¬º" FULLSTEP &pause>nul&exit)
 call :ifzerotrust
 set /p _endpoint=<.\!_ipver!result.txt
-set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94m÷ÿ÷√∂Àµ„[30m: <nul&warp-cli tunnel endpoint reset
+call :resetendpoint
 set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94m…Ë÷√∂Àµ„[30m: <nul&warp-cli tunnel endpoint set !_endpoint!
 set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94m÷ÿ÷√º”√‹√‹‘ø[30m: <nul&warp-cli tunnel rotate-keys
 del /q ".\*result.txt" >nul 2>nul
@@ -280,8 +280,5 @@ goto :top
 :resetendpoint
 warp-cli -V 2>nul >nul||(call :ErrorWarn "Œ¥’“µΩwarp-cliªÚŒﬁ∑®‘À––-ºÏ≤Èwarp∞≤◊∞ƒø¬º" FULLSTEP &pause>nul&exit)
 call :ifzerotrust
-warp-cli tunnel endpoint reset
-echo.[[94mINFO[30m]-ResetEndpoint [92m÷ÿ÷√÷¥––≤Ÿ◊˜ÕÍ≥…[30m
-echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
-pause>nul
-goto :top
+set /p=[[94mINFO[30m]-ResetEndpoint [94m÷ÿ÷√∂Àµ„[30m: <nul&warp-cli tunnel endpoint reset
+goto :eof
