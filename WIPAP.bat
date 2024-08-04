@@ -1,8 +1,8 @@
-:: WARP IP Auto-preference v0.3.1-20240713
+:: WARP IP Auto-preference v0.4.0-20240804
 :top
 endlocal
-set "wipap-ver=v0.3.1"
-set "wipap-date=20240713"
+set "wipap-ver=v0.4.0"
+set "wipap-date=20240804"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
 @echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936&mode con cols=80 lines=24
 call :ifwin7
@@ -66,6 +66,7 @@ call :ifzerotrust
 set /p _endpoint=<.\!_ipver!result.txt
 warp-cli tunnel endpoint reset
 warp-cli tunnel endpoint set !_endpoint!
+warp-cli tunnel rotate-keys
 del /q ".\*result.txt" >nul 2>nul
 echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [92m“—ÕÍ≥…[30m...
 echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
