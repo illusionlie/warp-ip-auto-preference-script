@@ -1,8 +1,8 @@
-:: WARP IP Auto-preference v0.4.0-20240804
+:: WARP IP Auto-preference v1.0.0-20240828
 :top
 endlocal
-set "wipap-ver=v0.4.0"
-set "wipap-date=20240804"
+set "wipap-ver=v1.0.0"
+set "wipap-date=20240828"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
 @echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936&mode con cols=80 lines=24
 call :ifwin7
