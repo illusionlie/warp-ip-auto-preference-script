@@ -8,6 +8,7 @@ title %wipap-title%
 
 set "_try=0"
 set "_ipver=v4"
+set "_warphash=B3899051EE2F3EC0074AB492918A263270AE43468C5EDB256549324CE7084855"
 
 :top
 cls
@@ -27,6 +28,15 @@ if NOT exist ".\warp.exe" (
 		goto :top
 	)
 	call :msgbox 1 "warp.exeœ¬‘ÿ≥…π¶"
+)
+::–£—È!
+for /f "usebackq tokens=*" %%i in (`powershell -NoProfile -Command "(Get-FileHash -Path '.\warp.exe' -Algorithm SHA256).Hash"`) do (
+    set "_hash=%%i"
+)
+if /i NOT "!_hash!"=="!_warphash!" (
+	call :msgbox 3 "æØ∏Ê! warp.exe π˛œ£–£—È“Ï≥£"
+	del /f /q ".\warp.exe" >nul 2>nul
+	exit
 )
 for %%i in (v4 v6) do (
     if NOT exist ".\ips-%%i.txt" (
@@ -65,50 +75,57 @@ echo.         #############################################################
 echo.                          ∞¥œ¬ "A - B" ∞¥º¸∫ÛºÃ–¯"
 choice /c 1230SAB /M "WIPAP" >nul
 cls
-if "%errorlevel%"=="7" call :resetendpoint&&echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•&pause>nul&&goto :top
+if "%errorlevel%"=="7" call :resetendpoint && goto :top
 if "%errorlevel%"=="6" goto :updater
 if "%errorlevel%"=="5" (if "!_ipver!"=="v4" (set "_ipver=v6") else (set "_ipver=v4")) & goto :main
 if "%errorlevel%"=="4" exit
 if "%errorlevel%"=="3" goto :loopmode
 if "%errorlevel%"=="2" goto :get10ip
 if "%errorlevel%"=="1" goto :fullstep
-call :ErrorWarn "Œ¥∂®“Âµƒ—°‘ÒœÓ∞≤≈≈-ºÏ≤ÈΩ≈±æ…Ë÷√" MainChoice &pause>nul&exit
+call :msgbox 3 "Œ¥∂®“Âµƒ—°‘ÒœÓ∞≤≈≈"
 
 :fullstep
-echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [92m“—æ≠ø™ º[30m...
+echo.[[92mINFO[30m] ◊‘∂Ø…Ë÷√!_ipver! “—æ≠ø™ º...
 if NOT !_num! GEQ 100 (call :build!_ipver!ip :fullstep)
-call :ResetALL
+
+call :cleanup
 call :testip
-if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [91m√ª”–ø…”√Ω·π˚, ÷ÿ∏¥‘À––[30m... & goto :fullstep)
-warp-cli -V 2>nul >nul||(call :ErrorWarn "Œ¥’“µΩwarp-cliªÚŒﬁ∑®‘À––-ºÏ≤Èwarp∞≤◊∞ƒø¬º" FULLSTEP &pause>nul&exit)
-call :ifzerotrust
+if NOT exist ".\!_ipver!result.txt" (echo.[[92mINFO[30m] √ª”–ø…”√Ω·π˚, ÷ÿ∏¥‘À––... & goto :fullstep)
+
+call :warperrortest
+
 set /p _endpoint=<.\!_ipver!result.txt
 call :resetendpoint
-set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94m…Ë÷√∂Àµ„[30m: <nul&warp-cli tunnel endpoint set !_endpoint!
-set /p=[[94mINFO[30m]-FULLSTEP-!_ipver! [94m÷ÿ÷√º”√‹√‹‘ø[30m: <nul&warp-cli tunnel rotate-keys
+
+echo.[[92mINFO[30m] ∂Àµ„: !_endpoint!
+set /p=[[92mINFO[30m] …Ë÷√∂Àµ„: <nul&warp-cli tunnel endpoint set !_endpoint!
+set /p=[[92mINFO[30m] ÷ÿ÷√º”√‹√‹‘ø: <nul&warp-cli tunnel rotate-keys
 del /q ".\*result.txt" >nul 2>nul
-echo.[[94mINFO[30m]-FULLSTEP-!_ipver! [92m“—ÕÍ≥…[30m...
-echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
-pause>nul
+
+call :msgbox 1 "◊‘∂Ø…Ë÷√“—ÕÍ≥…(IP!_ipver!)"
+
+pause>nul&&pause
 goto :top
 
 :get10ip
-echo.[[94mINFO[30m]-Get!_ipver!IP [92m“—æ≠ø™ º[30m...
+echo.[[92mINFO[30m] Get!_ipver!IP “—æ≠ø™ º...
 if NOT !_num! GEQ 100 (call :build!_ipver!ip :get10ip)
-call :ResetALL
+
+call :cleanup
 call :testip
-if NOT exist ".\!_ipver!result.txt" (echo.[[94mINFO[30m]-Get!_ipver!IP [91m√ª”–ø…”√Ω·π˚, ÷ÿ∏¥‘À––[30m... & goto :get10ip)
+if NOT exist ".\!_ipver!result.txt" (echo.[[92mINFO[30m] Get!_ipver!IP √ª”–ø…”√Ω·π˚, ÷ÿ∏¥‘À––... & goto :get10ip)
+
 :if10ip
 set "_line=0"
 for /f "delims=" %%a in (.\!_ipver!result.txt) do (
     set /a _line+=1
 )
 if !_line! LSS 10 (
-	echo.[[94mINFO[30m]-Get!_ipver!IP [91m–°”⁄10∏ˆΩ·π˚, ÷ÿ∏¥‘À––[30m...
+	echo.[[92mINFO[30m] Get!_ipver!IP –°”⁄10∏ˆΩ·π˚, ÷ÿ∏¥‘À––...
 	goto :get10ip
 ) else (
 	md "#Result" >nul 2>nul
-	if NOT exist ".\#Result\" (call :ErrorWarn "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–-ºÏ≤Èƒø¬º»®œﬁ" IF10IP &pause>nul&exit)
+	if NOT exist ".\#Result\" call :msgbox 3 "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–"
 	set "_log=.\#Result\WIPAP-!_ipver!-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
 	set "_line=0"
 	> "!_log!" (
@@ -120,22 +137,26 @@ if !_line! LSS 10 (
 		)
 	)
 )
+
 del /q ".\*result.txt" >nul 2>nul
 start notepad "!_log!"
-echo.[[94mINFO[30m]-Get!_ipver!IP [92m“—ÕÍ≥…[30m...
-echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
-pause>nul
+call :msgbox 1 "Get!_ipver!IP “—ÕÍ≥…"
+pause
+
 goto :top
 
 :loopmode
 md "#Result\LoopMode-!_ipver!" >nul 2>nul
-if NOT exist ".\#Result\" (call :ErrorWarn "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–-ºÏ≤Èƒø¬º»®œﬁ" LoopMode &pause>nul&exit)
+if NOT exist ".\#Result\" call :msgbox 3  "Œﬁ∑®¥¥Ω®Ω·π˚Œƒº˛º–"
 set "_looplog=.\#Result\LoopMode-!_ipver!\WIPAP-!date:~0,4!-!date:~5,2!-!date:~8,2!_!time:~0,2!_!time:~3,2!_!time:~6,2!.log"
+call :msgbox 1 "—≠ª∑ƒ£ Ω!_ipver! “—æ≠ø™ º..."
+
 :startloop
-echo.[[94mINFO[30m]-LoopMode-!_ipver! [92mø™ º—≠ª∑[30m...
 if NOT !_num! GEQ 100 (call :build!_ipver!ip :startloop)
-call :ResetALL
+
+call :cleanup
 call :testip
+
 if NOT exist ".\!_ipver!result.txt" goto :startloop
 >> "!_looplog!" (
 	for /f "delims=" %%a in (.\!_ipver!result.txt) do (
@@ -206,11 +227,6 @@ for /f "skip=1 tokens=1-3 delims=, " %%a in (.\!_ipver!fine.txt) do (
 del /q ".\!_ipver!fine.txt" >nul 2>nul
 goto :eof
 
-:ErrorWarn
-echo.[[91mERROR[30m]-%2 %1
-(echo =-?-=-?-=-?-= &echo %1)|msg %username% /time:3
-goto :eof
-
 :cleanup
 set "_num=0"
 set _log=
@@ -218,40 +234,39 @@ del /q ".\*ip.txt" >nul 2>nul
 del /q ".\*fine.txt" >nul 2>nul
 goto :eof
 
-:ifzerotrust
-warp-cli settings list|findstr /C:"(user set)"|findstr "Organization">nul 2>nul&&(call :ErrorWarn "ƒ„’˝‘⁄ π”√Zero Trust-ÕÀ≥ˆZero Trust" IFZeroTrust &pause>nul&exit)
+:warperrortest
+where /q warp-cli || call :msgbox 3 "Œ¥∞≤◊∞warpªÚŒ¥ÃÌº”µΩPATH"
+warp-cli settings list|findstr /C:"(user set)"|findstr "Organization">nul 2>nul&&(call :msgbox "ƒ„’˝‘⁄ π”√Zero Trust, –ËÕÀ≥ˆZero Trust")
 goto :eof
-
 
 :updater
 cls
-echo.[[94mINFO[30m]-Updater [92m’˝‘⁄¥” Github ºÏ≤È∏¸–¬[30m...
-curl -V >nul||(call :ErrorWarn "curl≤ª¥Ê‘⁄ Œﬁ∑®÷¥––-ºÏ≤ÈcURL" Updater &pause>nul&exit)
+call :msgbox 1 "’˝‘⁄¥” Github ºÏ≤È∏¸–¬..."
 for /f "tokens=2 delims=:," %%i in ('curl -L https://api.github.com/repos/illusionlie/warp-ip-auto-preference-script/releases/latest 2^>nul ^| findstr /R "^[ ]*\"tag_name\": *\"v[0-9]+\.[0-9]+\.[0-9]+\"$"') do (
     set "_ver=%%~i"
     goto :checkupdate
 )
 :checkupdate
-if NOT defined _ver (call :ErrorWarn "Github API ªÒ»°µΩµƒ÷µŒ™ø’-ºÏ≤ÈÕ¯¬Á¡¨Ω”" CheckUpdate &pause>nul&goto :top)
-echo.[[94mINFO[30m]-Updater [92m’˝‘⁄¥¶¿Ì∑µªÿµƒ∞Ê±æ∫≈Ω·π˚[30m...
+if NOT defined _ver (call :msgbox 2 "Github API ªÒ»°µΩµƒ÷µŒ™ø’" & pause & goto :top)
+echo.[[92mINFO[30m] ’˝‘⁄¥¶¿Ì∑µªÿµƒ∞Ê±æ∫≈Ω·π˚...
 set "_ver=!_ver:"=!"
 set "_ver=!_ver:v=!"
 set "_ver=!_ver: =!"
-echo.!_ver!|findstr /R "^[0-9\.]*$" >nul||(call :ErrorWarn "¥¶¿Ì∫Û∞¸∫¨≤ª”¶∏√¥Ê‘⁄µƒ◊÷∑˚-ºÏ≤ÈΩ≈±æ…Ë÷√" CheckUpdate &pause>nul&goto :top)
+echo.!_ver!|findstr /R "^[0-9\.]*$" >nul||(call :msgbox 2 "¥¶¿Ì∫Û∞¸∫¨≤ª”¶∏√¥Ê‘⁄µƒ◊÷∑˚" & goto :top)
 for /f "tokens=1-3 delims=." %%a in ("!_ver!") do (
     set "_major=%%a"
     set "_minor=%%b"
     set "_patch=%%c"
 )
-echo.[[94mINFO[30m]-Updater [92m’˝‘⁄¥¶¿Ìƒ⁄≤øµƒ∞Ê±æ∫≈Ω·π˚[30m...
-if NOT defined wipap-ver (call :ErrorWarn "Ω≈±æƒ⁄≤ø∞Ê±æ∫≈µƒ÷µŒ™ø’-ºÏ≤ÈΩ≈±æ…Ë÷√" CheckUpdate &pause>nul&goto :top)
+echo.[[92mINFO[30m] ’˝‘⁄¥¶¿Ìƒ⁄≤øµƒ∞Ê±æ∫≈Ω·π˚...
+if NOT defined wipap-ver call :msgbox 3 "Ω≈±æƒ⁄≤ø∞Ê±æ∫≈µƒ÷µŒ™ø’"
 set "wipap-ver=!wipap-ver:v=!"
 for /f "tokens=1-3 delims=." %%a in ("!wipap-ver!") do (
     set "_major-c=%%a"
     set "_minor-c=%%b"
     set "_patch-c=%%c"
 )
-echo.[[94mINFO[30m]-Updater [92m’˝‘⁄∂‘±»∞Ê±æ∫≈[30m...
+echo.[[92mINFO[30m] ’˝‘⁄∂‘±»∞Ê±æ∫≈...
 set "_update=false"
 if !_major! GTR !_major-c! (
     set "_update=true"
@@ -273,28 +288,26 @@ if !_major! EQU !_major-c! (
 )
 echo.
 if "!_update!"=="true" (
-	echo.[[94mINFO[30m]-Updater [92m∑¢œ÷–¬∞Ê±æ:[30m v[94m!_ver![30m
-	echo.[[94mINFO[30m]-Updater [94mµ±«∞∞Ê±æ:[30m v[94m!wipap-ver![30m
-	(echo =-?-=-?-=-?-= &echo.∑¢œ÷–¬∞Ê±æ: v%_ver%&echo.µ±«∞∞Ê±æ: v%wipap-ver%)|msg %username%
+	call :msgbox 1 "∑¢œ÷–¬∞Ê±æ: v!_ver!"
+	echo.[[92mINFO[30m] µ±«∞∞Ê±æ: v[94m!wipap-ver![30m
 ) else (
-if "!_update!"=="same" (
-	echo.[[94mINFO[30m]-Updater [92mƒ„“—æ≠‘⁄ π”√◊Ó–¬∞Ê±æ:[30m v[94m!_ver![30m
-) else (
-	echo.[[94mINFO[30m]-Updater [92mƒ„’˝‘⁄ π”√Ã·«∞∑¢––∞Ê±æ:[30m v[94m!wipap-ver![30m
-	echo.[[94mINFO[30m]-Updater [92mµ±«∞◊Ó–¬∑¢––∞Ê±æ:[30m v[94m!_ver![30m
-)
+	if "!_update!"=="same" (
+		echo.[[92mINFO[30m] ƒ„“—æ≠‘⁄ π”√◊Ó–¬∞Ê±æ: v[94m!_ver![30m
+	) else (
+		echo.[[92mINFO[30m] ƒ„’˝‘⁄ π”√Ã·«∞∑¢––∞Ê±æ: v[94m!wipap-ver![30m
+		echo.[[92mINFO[30m] µ±«∞◊Ó–¬∑¢––∞Ê±æ: v[94m!_ver![30m
+	)
 )
 echo.∞¥»Œ“‚º¸∑µªÿ÷˜≤Àµ•
 pause>nul
 goto :top
 
 :resetendpoint
-warp-cli -V 2>nul >nul || (
-	call :msgbox "Œ¥’“µΩwarp-cliªÚŒﬁ∑®‘À––"
-	goto :top
+call :warperrortest
+set /p=Warp-cli∑µªÿ: <nul & warp-cli tunnel endpoint reset || (
+	call :msgbox 2 "∂Àµ„÷ÿ÷√ ß∞‹"
 )
-call :ifzerotrust
-set /p=[[94mINFO[30m]-ResetEndpoint [94m÷ÿ÷√∂Àµ„[30m: <nul&warp-cli tunnel endpoint reset
+timeout /t 1 /nobreak >nul
 goto :eof
 
 :msgbox
@@ -311,7 +324,7 @@ if /i %_l% EQU 3 set "_c=[91m"&&set "_t=ERROR"
 set "_r=[30m"
 
 echo.[%_c%%_t%%_r%] %_m%
-where msg >nul 2>nul && ((echo [%_t%] & echo %_m%) |msg %username% /time:2)
+where /q msg && ((echo [%_t%] & echo %_m%) |msg %username% /time:2)
 powershell -NoProfile -Command "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');$objNotify = New-Object System.Windows.Forms.NotifyIcon;$objNotify.Icon = [System.Drawing.SystemIcons]::Information;$objNotify.BalloonTipText = '[%_t%]-%_m%';$objNotify.BalloonTipTitle = 'WIPAP';$objNotify.Visible = $true;$objNotify.ShowBalloonTip(6000)" >nul
 if /i %_l% EQU 3 (
 	echo.
