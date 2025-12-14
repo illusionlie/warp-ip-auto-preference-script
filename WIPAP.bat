@@ -1,11 +1,13 @@
 :: WARP IP Auto-preference v1.0.0-20240828
-:top
-endlocal
+@echo off & cd /D "%~dp0" & color 70 & chcp & mode con cols=80 lines=24
+
 set "wipap-ver=v1.0.0"
 set "wipap-date=20240828"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
-@echo off&title %wipap-title%&cd /D "%~dp0"&color 70&setlocal enabledelayedexpansion&cls&chcp 936&mode con cols=80 lines=24
-call :ifwin7
+title %wipap-title% & setlocal enabledelayedexpansion & cls 936
+
+:top
+endlocal
 call :iferrorfolder
 if NOT exist ".\warp.exe" (
 	powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" -OutFile "warp.exe"
@@ -197,11 +199,6 @@ set "_num=0"
 set _log=
 del /q ".\*ip.txt" >nul 2>nul
 del /q ".\*fine.txt" >nul 2>nul
-goto :eof
-
-:ifwin7
-for /f "tokens=2 delims==" %%i in ('wmic os get version /value') do (set "_winver=%%i")
-if !_winver! LSS 10.0 (call :ErrorWarn "你的Windows系统版本低于Win10-升级Windows版本" IFWin7 &pause>nul&exit)
 goto :eof
 
 :ifzerotrust
