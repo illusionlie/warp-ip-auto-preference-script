@@ -1,26 +1,38 @@
-:: WARP IP Auto-preference v1.0.0-20240828
+:: WARP IP Auto-preference v1.1.0-20251214
 @echo off & cd /D "%~dp0" & color 70 & chcp & mode con cols=80 lines=24
 
-set "wipap-ver=v1.0.0"
-set "wipap-date=20240828"
+set "wipap-ver=v1.1.0"
+set "wipap-date=20251214"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
-title %wipap-title% & setlocal enabledelayedexpansion & cls 936
+title %wipap-title% & cls 936
 
+set "_try=0"
 :top
 endlocal
-call :iferrorfolder
+if /i %_try% GEQ 5 call :msgbox ERROR "÷ÿ ‘≥¨π˝…œœﬁ"
+set /a "_try+=1"
+setlocal enabledelayedexpansion
+
+::iferrorfolder
+echo.!cd!|findstr /I "%% ^! ^^ ^| ^& ^' ^) ^(" && (call :msgbox  ERROR "Œƒº˛º–¬∑æ∂∞¸∫¨∑«∑®◊÷∑˚" )
+
+::check warp.exe
 if NOT exist ".\warp.exe" (
-	powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" -OutFile "warp.exe"
-)
-if NOT exist ".\warp.exe" (
-	call :ErrorWarn "warp.exe≤ª¥Ê‘⁄, ≤¢«“œ¬‘ÿ ß∞‹-ºÏ≤ÈÕ¯¬Á¡¨Ω”" DownloadFailed &pause>nul&exit
+	curl -L -o ".\warp.exe" "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" || (
+		del /f /q ".\warp.exe" >nul 2>nul
+		call :msgbox WARN "warp.exeœ¬‘ÿ ß∞‹, Ω´÷ÿ ‘"
+		goto :top
+	)
+	::powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" -OutFile "warp.exe"
 )
 for %%i in (v4 v6) do (
     if NOT exist ".\ips-%%i.txt" (
-		powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/ips-%%i.txt" -OutFile "ips-%%i.txt"
-	)
-    if NOT exist ".\ips-%%i.txt" (
-		call :ErrorWarn "»±…Ÿ IP%%i  ˝æ› ips-%%i.txt-ºÏ≤ÈÕ¯¬Á¡¨Ω”" DownloadFailed &pause>nul&exit
+		curl -L -o "ips-%%i.txt""https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/ips-%%i.txt" || (
+			del /f /q "ips-%%i.txt" >nul 2>nul
+			call :msgbox WARN "ips-%%i.txtœ¬‘ÿ ß∞‹, Ω´÷ÿ ‘"
+			goto :top
+		)
+		::powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/ips-%%i.txt" -OutFile "ips-%%i.txt"
 	)
 )
 call :ResetALL
@@ -205,9 +217,6 @@ goto :eof
 warp-cli settings list|findstr /C:"(user set)"|findstr "Organization">nul 2>nul&&(call :ErrorWarn "ƒ„’˝‘⁄ π”√Zero Trust-ÕÀ≥ˆZero Trust" IFZeroTrust &pause>nul&exit)
 goto :eof
 
-:iferrorfolder
-echo.!cd!|findstr /I "%% ^! ^^ ^| ^& ^' ^) ^("&&(call :ErrorWarn "Œƒº˛º–¬∑æ∂∞¸∫¨∑«∑®◊÷∑˚-–ﬁ∏ƒ¬∑æ∂" IFErrorFolder &pause>nul&exit)
-goto :eof
 
 :updater
 cls
@@ -278,4 +287,17 @@ goto :top
 warp-cli -V 2>nul >nul||(call :ErrorWarn "Œ¥’“µΩwarp-cliªÚŒﬁ∑®‘À––-ºÏ≤Èwarp∞≤◊∞ƒø¬º" FULLSTEP &pause>nul&exit)
 call :ifzerotrust
 set /p=[[94mINFO[30m]-ResetEndpoint [94m÷ÿ÷√∂Àµ„[30m: <nul&warp-cli tunnel endpoint reset
+goto :eof
+
+:msgbox
+echo.
+(echo [%~1] & echo %~2)|msg %username% /time:2
+powershell -NoProfile -Command "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');$objNotify = New-Object System.Windows.Forms.NotifyIcon;$objNotify.Icon = [System.Drawing.SystemIcons]::Information;$objNotify.BalloonTipText = '[%~1]-%~2';$objNotify.BalloonTipTitle = 'ArchiveHelper';$objNotify.Visible = $true;$objNotify.ShowBalloonTip(8000)" >nul
+if "%~1"=="ERROR" (
+	cls
+	echo.
+	echo.
+	echo.Press any key to exit...
+	pause >nul & exit
+)
 goto :eof
