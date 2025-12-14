@@ -1,42 +1,47 @@
 :: WARP IP Auto-preference v1.1.0-20251214
-@echo off & cd /D "%~dp0" & color 70 & chcp & mode con cols=80 lines=24
+@echo off & cd /D "%~dp0" & color 70 & chcp 936 & mode con cols=80 lines=24
 
 set "wipap-ver=v1.1.0"
 set "wipap-date=20251214"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
-title %wipap-title% & cls 936
+title %wipap-title%
 
 set "_try=0"
+set "_ipver=v4"
+
 :top
+cls
 endlocal
-if /i %_try% GEQ 5 call :msgbox ERROR "÷ÿ ‘≥¨π˝…œœﬁ"
+if /i %_try% GEQ 5 call :msgbox 3 "÷ÿ ‘≥¨π˝…œœﬁ"
 set /a "_try+=1"
 setlocal enabledelayedexpansion
 
 ::iferrorfolder
-echo.!cd!|findstr /I "%% ^! ^^ ^| ^& ^' ^) ^(" && (call :msgbox  ERROR "Œƒº˛º–¬∑æ∂∞¸∫¨∑«∑®◊÷∑˚" )
+echo.!cd!|findstr /I "%% ^! ^^ ^| ^& ^' ^) ^(" && (call :msgbox 3 "Œƒº˛º–¬∑æ∂∞¸∫¨∑«∑®◊÷∑˚")
 
-::check warp.exe
 if NOT exist ".\warp.exe" (
-	curl -L -o ".\warp.exe" "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" || (
+	call :msgbox 2 "»±…Ÿwarp.exe, º¥Ω´œ¬‘ÿ [≥¢ ‘: !_try!]"
+	curl -L -o ".\warp.exe" "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" >nul || (
 		del /f /q ".\warp.exe" >nul 2>nul
-		call :msgbox WARN "warp.exeœ¬‘ÿ ß∞‹, Ω´÷ÿ ‘"
+		call :msgbox 2 "warp.exeœ¬‘ÿ ß∞‹, Ω´÷ÿ ‘"
 		goto :top
 	)
-	::powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp.exe" -OutFile "warp.exe"
+	call :msgbox 1 "warp.exeœ¬‘ÿ≥…π¶"
 )
 for %%i in (v4 v6) do (
     if NOT exist ".\ips-%%i.txt" (
-		curl -L -o "ips-%%i.txt""https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/ips-%%i.txt" || (
+		call :msgbox 2 "»±…Ÿips-%%i.txt, º¥Ω´œ¬‘ÿ [≥¢ ‘: !_try!]"
+		curl -L -o "ips-%%i.txt" "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/ips-%%i.txt" >nul || (
 			del /f /q "ips-%%i.txt" >nul 2>nul
-			call :msgbox WARN "ips-%%i.txtœ¬‘ÿ ß∞‹, Ω´÷ÿ ‘"
+			call :msgbox 2 "ips-%%i.txtœ¬‘ÿ ß∞‹, Ω´÷ÿ ‘"
 			goto :top
 		)
-		::powershell wget -Uri "https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/ips-%%i.txt" -OutFile "ips-%%i.txt"
+		call :msgbox 1 "ips-%%i.txtœ¬‘ÿ≥…π¶"
 	)
 )
-call :ResetALL
-set "_ipver=v4"
+
+call :cleanup
+
 :main
 set /p=<nul
 cls
@@ -206,7 +211,7 @@ echo.[[91mERROR[30m]-%2 %1
 (echo =-?-=-?-=-?-= &echo %1)|msg %username% /time:3
 goto :eof
 
-:ResetALL
+:cleanup
 set "_num=0"
 set _log=
 del /q ".\*ip.txt" >nul 2>nul
@@ -284,20 +289,36 @@ pause>nul
 goto :top
 
 :resetendpoint
-warp-cli -V 2>nul >nul||(call :ErrorWarn "Œ¥’“µΩwarp-cliªÚŒﬁ∑®‘À––-ºÏ≤Èwarp∞≤◊∞ƒø¬º" FULLSTEP &pause>nul&exit)
+warp-cli -V 2>nul >nul || (
+	call :msgbox "Œ¥’“µΩwarp-cliªÚŒﬁ∑®‘À––"
+	goto :top
+)
 call :ifzerotrust
 set /p=[[94mINFO[30m]-ResetEndpoint [94m÷ÿ÷√∂Àµ„[30m: <nul&warp-cli tunnel endpoint reset
 goto :eof
 
 :msgbox
-echo.
-(echo [%~1] & echo %~2)|msg %username% /time:2
-powershell -NoProfile -Command "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');$objNotify = New-Object System.Windows.Forms.NotifyIcon;$objNotify.Icon = [System.Drawing.SystemIcons]::Information;$objNotify.BalloonTipText = '[%~1]-%~2';$objNotify.BalloonTipTitle = 'ArchiveHelper';$objNotify.Visible = $true;$objNotify.ShowBalloonTip(8000)" >nul
-if "%~1"=="ERROR" (
-	cls
+setlocal
+
+set "_l=%~1"
+set "_m=%~2"
+
+set "_c="
+set "_t=UNKOWN"
+if /i %_l% EQU 1 set "_c=[92m"&&set "_t=INFO"
+if /i %_l% EQU 2 set "_c=[93m"&&set "_t=WARN"
+if /i %_l% EQU 3 set "_c=[91m"&&set "_t=ERROR"
+set "_r=[30m"
+
+echo.[%_c%%_t%%_r%] %_m%
+where msg >nul 2>nul && ((echo [%_t%] & echo %_m%) |msg %username% /time:2)
+powershell -NoProfile -Command "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');$objNotify = New-Object System.Windows.Forms.NotifyIcon;$objNotify.Icon = [System.Drawing.SystemIcons]::Information;$objNotify.BalloonTipText = '[%_t%]-%_m%';$objNotify.BalloonTipTitle = 'WIPAP';$objNotify.Visible = $true;$objNotify.ShowBalloonTip(6000)" >nul
+if /i %_l% EQU 3 (
 	echo.
 	echo.
 	echo.Press any key to exit...
 	pause >nul & exit
 )
+
+endlocal
 goto :eof
