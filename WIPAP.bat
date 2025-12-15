@@ -1,8 +1,8 @@
-:: WARP IP Auto-preference v1.1.0-20251214
+:: WARP IP Auto-preference v1.1.1-20251215
 @echo off & cd /D "%~dp0" & color 70 & chcp 936 & mode con cols=80 lines=24
 
-set "wipap-ver=v1.1.0"
-set "wipap-date=20251214"
+set "wipap-ver=v1.1.1"
+set "wipap-date=20251215"
 set "wipap-title= -WARP IP Auto-preference- %wipap-ver%-%wipap-date%"
 title %wipap-title%
 
@@ -38,6 +38,8 @@ if /i NOT "!_hash!"=="!_warphash!" (
 	del /f /q ".\warp.exe" >nul 2>nul
 	exit
 )
+echo.[[92mINFO[30m] warp.exe ¹şÏ£Ğ£ÑéÍ¨¹ı
+timeout /t 1 /nobreak >nul
 for %%i in (v4 v6) do (
     if NOT exist ".\ips-%%i.txt" (
 		call :msgbox 2 "È±ÉÙips-%%i.txt, ¼´½«ÏÂÔØ [³¢ÊÔ: !_try!]"
@@ -85,14 +87,15 @@ if "%errorlevel%"=="1" goto :fullstep
 call :msgbox 3 "Î´¶¨ÒåµÄÑ¡ÔñÏî°²ÅÅ"
 
 :fullstep
+::ĞèÒª¼ì²âÊÇ·ñÊÇZero Trust
+call :warperrortest
+
 echo.[[92mINFO[30m] ×Ô¶¯ÉèÖÃ!_ipver! ÒÑ¾­¿ªÊ¼...
 if NOT !_num! GEQ 100 (call :build!_ipver!ip :fullstep)
 
 call :cleanup
 call :testip
 if NOT exist ".\!_ipver!result.txt" (echo.[[92mINFO[30m] Ã»ÓĞ¿ÉÓÃ½á¹û, ÖØ¸´ÔËĞĞ... & goto :fullstep)
-
-call :warperrortest
 
 set /p _endpoint=<.\!_ipver!result.txt
 call :resetendpoint
@@ -104,7 +107,7 @@ del /q ".\*result.txt" >nul 2>nul
 
 call :msgbox 1 "×Ô¶¯ÉèÖÃÒÑÍê³É(IP!_ipver!)"
 
-pause>nul&&pause
+pause
 goto :top
 
 :get10ip
@@ -141,8 +144,8 @@ if !_line! LSS 10 (
 del /q ".\*result.txt" >nul 2>nul
 start notepad "!_log!"
 call :msgbox 1 "Get!_ipver!IP ÒÑÍê³É"
-pause
 
+pause
 goto :top
 
 :loopmode
@@ -235,8 +238,13 @@ del /q ".\*fine.txt" >nul 2>nul
 goto :eof
 
 :warperrortest
-where /q warp-cli || call :msgbox 3 "Î´°²×°warp»òÎ´Ìí¼Óµ½PATH"
-warp-cli settings list|findstr /C:"(user set)"|findstr "Organization">nul 2>nul&&(call :msgbox "ÄãÕıÔÚÊ¹ÓÃZero Trust, ĞèÍË³öZero Trust")
+where /q warp-cli || call :msgbox 3 "Î´°²×°WARP»òÎ´Ìí¼Óµ½PATH"
+(warp-cli settings list | findstr /C:"(user set)" | findstr "Organization">nul 2>nul) && (fltmc >nul 2>nul || (
+	call :msgbox 2 "µ±Ç°WARPÊ¹ÓÃZero TrustµÇÂ¼, ½«ÒÔ¹ÜÀíÔ±Éí·İ×Ô¶¯ÖØÆô"
+	timeout /t 3 /nobreak >nul
+	powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+	exit
+))
 goto :eof
 
 :updater
@@ -298,13 +306,13 @@ if "!_update!"=="true" (
 		echo.[[92mINFO[30m] µ±Ç°×îĞÂ·¢ĞĞ°æ±¾: v[94m!_ver![30m
 	)
 )
-echo.°´ÈÎÒâ¼ü·µ»ØÖ÷²Ëµ¥
-pause>nul
+
+pause
 goto :top
 
 :resetendpoint
 call :warperrortest
-set /p=Warp-cli·µ»Ø: <nul & warp-cli tunnel endpoint reset || (
+set /p=ÖØÖÃ¶Ëµã: <nul & warp-cli tunnel endpoint reset || (
 	call :msgbox 2 "¶ËµãÖØÖÃÊ§°Ü"
 )
 timeout /t 1 /nobreak >nul
