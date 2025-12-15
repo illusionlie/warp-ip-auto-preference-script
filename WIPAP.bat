@@ -221,8 +221,8 @@ for /f "skip=1 tokens=1-3 delims=, " %%a in (.\!_ipver!fine.txt) do (
 	set "_delay=%%c"
 	set "_loss=!_loss:%%=!"
 	set "_delay=!_delay: ms=!"
-	if !_loss! LSS 40 (
-		if !_delay! LSS 500 (
+	if !_loss! LSS 20 (
+		if !_delay! LSS 300 (
 			echo !_ip_port! >>".\!_ipver!result.txt"
 		)
     )
